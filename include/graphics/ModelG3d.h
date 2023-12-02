@@ -373,6 +373,12 @@ public:
 
     void setDisplayListDirty();
 
+    u32 getItemID() const { return mItemID; }
+    void setItemID(u32 item_id) { mItemID = item_id; }
+
+    bool isSelected() const { return mIsSelected; }
+    void setSelection(bool is_selected) { mIsSelected = is_selected; }
+
 private:
     void initializeShapeRenderInfo_(ShapeRenderInfo& render_info, const nw::g3d::MaterialObj* p_material, const nw::g3d::ShapeObj* p_shape);
     static s32 sortShapeRenderInfoCmp(const ShapeRenderInfo* a, const ShapeRenderInfo* b);
@@ -417,5 +423,7 @@ private:
 
     // Custom
     ShapeRenderInfo*    mShapeRenderInfo;
+    u32                 mItemID;
+    bool                mIsSelected;
 };
 //static_assert(sizeof(ModelG3d) == 0x1AC);

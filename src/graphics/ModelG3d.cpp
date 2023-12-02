@@ -37,6 +37,8 @@ ModelG3d::ModelG3d()
     , mSubBoundingFlagArray()
     , mDisplayListDirty(false)
     , mShapeRenderInfo(nullptr)
+    , mItemID(u32(-1))
+    , mIsSelected(false)
 {
 }
 
@@ -852,6 +854,8 @@ void ModelG3d::drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_inf
 
     p_shader_rio->setUniform(u32(nw::g3d::fnd::s_AlphaFunc - GL_NEVER), u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.alphaFunc"));
     p_shader_rio->setUniform(nw::g3d::fnd::s_AlphaRefValue,             u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.alphaRef"));
+    p_shader_rio->setUniform(mItemID,                                   u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.uItemID"));
+    p_shader_rio->setUniform(mIsSelected,                               u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.uIsSelected"));
 #endif // RIO_IS_WIN
 
     if (!render_info.attrib_dl.isEmpty())
