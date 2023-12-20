@@ -13,7 +13,7 @@ DVCameraParam::DVCameraParam(DistantViewMgr* dv_mgr, const rio::Vector3f* p_bg_p
     , mpBgPos(p_bg_pos)
 {
     u32 size = 0;
-    const void* file = dv_mgr->mArchiveRes.getFile((dv_name + ".camera").c_str(), &size);
+    const void* const file = dv_mgr->mArchiveRes.getFileConst((dv_name + ".camera").c_str(), &size);
 
     if (file)
         mParamList.read(file, size);

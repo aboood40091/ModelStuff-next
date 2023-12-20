@@ -6,7 +6,7 @@
 #include <math/rio_Math.h>
 
 ModelResource::ModelResource()
-    : mResFile(NULL)
+    : mResFile(nullptr)
     , mModelShaderArchive()
     , _1c(0)
 {
@@ -23,17 +23,26 @@ void ModelResource::destroy()
     if (mModelShaderArchive.isBufferReady())
     {
         for (s32 i = 0; i < mResFile->GetModelCount(); i++)
+        {
             if (mModelShaderArchive[i].obj)
             {
                 mModelShaderArchive[i].obj->destroy();
                 delete mModelShaderArchive[i].obj;
+
+                if (mModelShaderArchive[i].res_binary_archive)
+                    rio::MemUtil::free(mModelShaderArchive[i].res_binary_archive);
+
+                if (mModelShaderArchive[i].res_archive)
+                    rio::MemUtil::free(mModelShaderArchive[i].res_archive);
             }
+        }
 
         mModelShaderArchive.freeBuffer();
     }
 
     mResFile->Cleanup();
-    mResFile = NULL;
+    rio::MemUtil::free(mResFile);
+    mResFile = nullptr;
 }
 
 void ModelResource::load(
@@ -41,11 +50,16 @@ void ModelResource::load(
     const nw::g3d::res::ResFile* tex_res_file
 )
 {
-    mResFile = nw::g3d::res::ResFile::ResCast(
-        archive->getFile(
-            (std::string(filename) + ".bfres").c_str()
-        )
+    u32 res_file_size = 0;
+    const void* p_res_file_const = archive->getFileConst(
+        (std::string(filename) + ".bfres").c_str(),
+        &res_file_size
     );
+    RIO_ASSERT(p_res_file_const && res_file_size);
+    void* p_res_file = rio::MemUtil::alloc(res_file_size, 0x2000);
+    rio::MemUtil::copy(p_res_file, p_res_file_const, res_file_size);
+
+    mResFile = nw::g3d::res::ResFile::ResCast(p_res_file);
 
   //sead::Graphics::instance()->lockDrawContext();
     {
@@ -92,34 +106,46 @@ void ModelResource::load(
 
         if (!is_local)
         {
-            mModelShaderArchive[idx_model].obj = NULL;
+            mModelShaderArchive[idx_model].obj = nullptr;
             // They forgot to free "shader_program_archive"...
             delete shader_program_archive;
             shader_program_archive = nullptr;
         }
         else
         {
-            const agl::ResShaderArchiveData* res_shader_archive = NULL;
-            const agl::ResBinaryShaderArchiveData* res_binary_shader_archive = NULL;
+            agl::ResShaderArchiveData* res_shader_archive = nullptr;
+            agl::ResBinaryShaderArchiveData* res_binary_shader_archive = nullptr;
 
 #if RIO_IS_WIN
             if (force_sharcfb)
 #endif // RIO_IS_WIN
             {
-                res_binary_shader_archive = static_cast<agl::ResBinaryShaderArchiveData*>(
-                    archive->getFile(
-                        (std::string(model_name) + ".sharcfb").c_str() // <---- Uses model name
-                    )
+                u32 file_size = 0;
+                const void* const file = archive->getFileConst(
+                    (std::string(model_name) + ".sharcfb").c_str(), // <---- Uses model name
+                    &file_size
                 );
+
+                if (file && file_size)
+                {
+                    res_binary_shader_archive = static_cast<agl::ResBinaryShaderArchiveData*>(rio::MemUtil::alloc(file_size, agl::cShaderArchiveAlignment));
+                    rio::MemUtil::copy(res_binary_shader_archive, file, file_size);
+                }
             }
 #if RIO_IS_WIN
             else
             {
-                res_shader_archive = static_cast<agl::ResShaderArchiveData*>(
-                    archive->getFile(
-                        (std::string(model_name) + ".sharc").c_str() // <---- Uses model name
-                    )
+                u32 file_size = 0;
+                const void* const file = archive->getFileConst(
+                    (std::string(model_name) + ".sharc").c_str(), // <---- Uses model name
+                    &file_size
                 );
+
+                if (file && file_size)
+                {
+                    res_shader_archive = static_cast<agl::ResShaderArchiveData*>(rio::MemUtil::alloc(file_size, 4));
+                    rio::MemUtil::copy(res_shader_archive, file, file_size);
+                }
             }
 #endif // RIO_IS_WIN
 

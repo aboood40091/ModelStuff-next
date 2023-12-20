@@ -61,6 +61,7 @@ DistantViewMgr::DistantViewMgr(const agl::RenderBuffer& render_buffer)
     , mFlickerOffset{0.375f, 0.375f}
     // Custom
     , mpArchive(nullptr)
+    , mpDofFile(nullptr)
     , mRenderBuffer(render_buffer)
 {
     mDof.initialize();
@@ -114,6 +115,12 @@ void DistantViewMgr::destroy()
         mArchiveRes.destroy();
         rio::MemUtil::free(mpArchive);
         mpArchive = nullptr;
+    }
+
+    if (mpDofFile)
+    {
+        rio::MemUtil::free(mpDofFile);
+        mpDofFile = nullptr;
     }
 }
 
@@ -236,14 +243,18 @@ void DistantViewMgr::initialize(const std::string& dv_name, const std::string& d
 
     mpCameraParam = new DVCameraParam(this, &mBgPos, dv_fname);
 
-    const void* p_dof_file = mArchiveRes.getFile((dv_fname + ".bagldof").c_str());
-    if (p_dof_file)
+    u32 dof_file_size = 0;
+    const void* const p_dof_file = mArchiveRes.getFileConst((dv_fname + ".bagldof").c_str(), &dof_file_size);
+    if (p_dof_file && dof_file_size)
     {
-        agl::utl::ResParameterArchive res_param_arc(p_dof_file);
+        mpDofFile = rio::MemUtil::alloc(dof_file_size, 4);
+        rio::MemUtil::copy(mpDofFile, p_dof_file, dof_file_size);
+        agl::utl::ResParameterArchive res_param_arc(mpDofFile);
         mDof.applyResParameterArchive(res_param_arc);
     }
     else
     {
+        mpDofFile = nullptr;
         mDof.setEnable(false);
     }
 

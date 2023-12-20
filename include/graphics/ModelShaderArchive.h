@@ -6,8 +6,8 @@
 struct ModelShaderArchive
 {
     agl::ShaderProgramArchive*              obj;
-    const agl::ResBinaryShaderArchiveData*  res_binary_archive;
-    const agl::ResShaderArchiveData*        res_archive;
+    agl::ResBinaryShaderArchiveData*        res_binary_archive;
+    agl::ResShaderArchiveData*              res_archive;
     bool                                    initialized;
 };
 static_assert(sizeof(ModelShaderArchive) == 0x10);

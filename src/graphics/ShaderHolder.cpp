@@ -127,8 +127,8 @@ void ShaderHolder::initialize(const std::string& arc_path)
 
 agl::ShaderProgramArchive* ShaderHolder::createShaderArchive_(const std::string& filename) const
 {
-    const agl::ResBinaryShaderArchiveData* res_binary_shader_archive = static_cast<agl::ResBinaryShaderArchiveData*>(
-        mArchiveRes.getFile((filename + ".sharcfb").c_str())
+    agl::ResBinaryShaderArchiveData* res_binary_shader_archive = static_cast<agl::ResBinaryShaderArchiveData*>(
+        mArchiveRes.getFileMutable((filename + ".sharcfb").c_str())
     );
 
     agl::ShaderProgramArchive* p_archive = new agl::ShaderProgramArchive();

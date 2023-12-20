@@ -133,6 +133,7 @@ private:
     u8*                     mpArchive;
     SharcArchiveRes         mArchiveRes;
     ModelResource           mModelRes;
+    void*                   mpDofFile;
 
     const agl::RenderBuffer&    mRenderBuffer;
 

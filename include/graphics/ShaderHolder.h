@@ -38,6 +38,6 @@ public:
 
 private:
     u8* mpArchive;
-    SharcArchiveRes mArchiveRes;
+    mutable SharcArchiveRes mArchiveRes;
     std::unordered_map<std::string, agl::ShaderProgramArchive*> mShaderArchiveMap;
 };
