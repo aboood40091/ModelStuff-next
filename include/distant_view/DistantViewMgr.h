@@ -26,16 +26,10 @@ class TexturePatternAnimation;
 class DistantViewMgr
 {
 public:
-    static bool createSingleton(const agl::RenderBuffer& render_buffer);
-    static void destroySingleton();
-    static DistantViewMgr* instance() { return sInstance; }
-
-private:
-    static DistantViewMgr* sInstance;
-
     DistantViewMgr(const agl::RenderBuffer& render_buffer);
     ~DistantViewMgr();
 
+private:
     DistantViewMgr(const DistantViewMgr&);
     DistantViewMgr& operator=(const DistantViewMgr&);
 

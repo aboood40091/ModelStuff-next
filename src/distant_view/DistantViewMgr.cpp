@@ -17,26 +17,6 @@
 #include <gx2/event.h>
 #endif // RIO_IS_CAFE
 
-DistantViewMgr* DistantViewMgr::sInstance = nullptr;
-
-bool DistantViewMgr::createSingleton(const agl::RenderBuffer& render_buffer)
-{
-    if (sInstance)
-        return false;
-
-    sInstance = new DistantViewMgr(render_buffer);
-    return true;
-}
-
-void DistantViewMgr::destroySingleton()
-{
-    if (!sInstance)
-        return;
-
-    delete sInstance;
-    sInstance = nullptr;
-}
-
 DistantViewMgr::DistantViewMgr(const agl::RenderBuffer& render_buffer)
     : mNear(100.0f)
     , mFar(80000.0f)
@@ -78,11 +58,14 @@ DistantViewMgr::~DistantViewMgr()
 
 void DistantViewMgr::destroy()
 {
+    if (mpBasicModel)
+    {
 #if RIO_IS_CAFE
-    GX2DrawDone();
+        GX2DrawDone();
 #elif RIO_IS_WIN
-    RIO_GL_CALL(glFinish());
+        RIO_GL_CALL(glFinish());
 #endif
+    }
 
     mDofIndScroll.set(0.0f, 0.0f);
 
