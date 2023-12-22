@@ -57,6 +57,39 @@ public:
     );
     void destroy();
 
+    void setNear(f32 near)
+    {
+        mNear = near;
+        mProjection.setNear(mNear);
+    }
+
+    f32 getNear() const
+    {
+        return mNear;
+    }
+
+    void setFar(f32 far)
+    {
+        mFar = far;
+        mProjection.setFar(mFar);
+    }
+
+    f32 getFar() const
+    {
+        return mFar;
+    }
+
+    void setFovyDeg(f32 deg)
+    {
+        mFovyDeg = deg;
+        mProjection.setFovy(rio::Mathf::deg2rad(mFovyDeg));
+    }
+
+    f32 getFovyDeg() const
+    {
+        return mFovyDeg;
+    }
+
     void setScale(f32 scale)
     {
         mScale = scale;
@@ -99,12 +132,6 @@ public:
 
     void draw(RenderObjLayer* p_layer);
 
-    void worldPosToScreenPos(rio::Vector3f* out_screen_pos, const rio::Vector3f& in_world_pos) const;
-    void worldPosToBgScrollPos(rio::Vector3f* out_pos, const rio::Vector3f& in_world_pos) const;
-
-    s32 searchBoneIndex(const char* name) const;
-    void getBoneWorldMatrix(s32 index, rio::Matrix34f* mtx) const;
-
 private:
     f32                         mNear;
     f32                         mFar;
@@ -120,20 +147,18 @@ private:
     BasicModel*                 mpBasicModel;
     DVCameraParam*              mpCameraParam;
     rio::Vector3f               mBgPos; // Position relative to the Bg / level camera
-  //f32                         mAreaMinY;
     agl::pfx::DepthOfField      mDof;
     agl::TextureData*           mpDofIndTexture;
     rio::Vector2f               mDofIndScroll;
-    u8                          _1455; // Unused
     bool                        mIsFlickerEnable;
-    u8                          mFlickerCounter;
+    bool                        mFlickerCounter;
     rio::Vector2f               mFlickerOffset;
 
     // Custom
-    u8*                     mpArchive;
-    SharcArchiveRes         mArchiveRes;
-    ModelResource           mModelRes;
-    void*                   mpDofFile;
+    u8*                         mpArchive;
+    SharcArchiveRes             mArchiveRes;
+    ModelResource               mModelRes;
+    void*                       mpDofFile;
 
     const agl::RenderBuffer&    mRenderBuffer;
 

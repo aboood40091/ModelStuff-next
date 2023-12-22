@@ -52,12 +52,11 @@ DistantViewMgr::DistantViewMgr(const agl::RenderBuffer& render_buffer)
     , mpBasicModel(nullptr)
     , mpCameraParam(nullptr)
     , mBgPos{0.0f, 0.0f, 0.0f}
-  //, mAreaMinY(AreaTask::instance()->getBound().getMin().y)
     , mDof()
     , mpDofIndTexture(nullptr)
     , mDofIndScroll{0.0f, 0.0f}
     , mIsFlickerEnable(true)
-    , mFlickerCounter(0)
+    , mFlickerCounter(false)
     , mFlickerOffset{0.375f, 0.375f}
     // Custom
     , mpArchive(nullptr)
@@ -130,12 +129,11 @@ void DistantViewMgr::calcView_(const rio::BaseVec2f& bg_screen_center, f32 bg_of
 
     f32 fovy_tan = std::tan(rio::Mathf::deg2rad(mFovyDeg * 0.5f));
 
-    f32 screen_center_x = /* BgScrollMgr::instance()->getScreenCenterX() */ bg_screen_center.x;
-    f32 screen_center_y = /* BgScrollMgr::instance()->getScreenCenterY() - BgScrollMgr::instance()->getScrollEffectMgr()._3c._8 */ bg_screen_center.y;
+    f32 screen_center_x = bg_screen_center.x;
+    f32 screen_center_y = bg_screen_center.y;
 
-    f32 base_z = (112.0f / fovy_tan) * /* BgScrollMgr::instance()->getZoom() */ bg_zoom * mScale;
+    f32 base_z = (112.0f / fovy_tan) * bg_zoom * mScale;
 
-    fovy_tan = std::tan(rio::Mathf::deg2rad(mFovyDeg * 0.5f)); // ???????????? ok
     fovy_tan = base_z * fovy_tan * 2;
 
     mCameraBasePos.z = base_z;
@@ -143,31 +141,21 @@ void DistantViewMgr::calcView_(const rio::BaseVec2f& bg_screen_center, f32 bg_of
     mCameraBasePos.x = screen_center_x - fovy_tan * mpCameraParam->getProjOffset().x;
     mCameraBasePos.y = screen_center_y - fovy_tan * mpCameraParam->getProjOffset().y;
     if (mpCameraParam->getTypeDirY() == 1)
-        mCameraBasePos.y += mpCameraParam->getMagnifCameraPosY() * /* (BgScrollMgr::instance()->getScreenBottom() - mAreaMinY) */ bg_offset_area_bottom_to_screen_bottom;
+        mCameraBasePos.y += mpCameraParam->getMagnifCameraPosY() * bg_offset_area_bottom_to_screen_bottom;
 
     mCameraPos.setAdd(mCameraBasePos, mCameraPosOffset);
 
-    rio::Vector2f proj_base_offs { 0.0f, 0.0f };
-    /*
-    if (Quake::instance())
-        proj_base_offs = Quake::instance()->getOffset();
-    */
+    f32 proj_base_offs_y = 0.0f;
     if (mpCameraParam->getTypeDirY() == 0)
-        proj_base_offs.y += mpCameraParam->getMagnifProjOffsetY() * /* (BgScrollMgr::instance()->getScreenBottom() - mAreaMinY) */ bg_offset_area_bottom_to_screen_bottom;
+        proj_base_offs_y = mpCameraParam->getMagnifProjOffsetY() * bg_offset_area_bottom_to_screen_bottom;
 
-    if (proj_base_offs.x != 0.0f || proj_base_offs.y != 0.0f)
+    if (proj_base_offs_y != 0.0f)
     {
-        f32 proj_base_offs_x = proj_base_offs.x / 1280;
-        f32 proj_base_offs_y = proj_base_offs.y / 720;
-
-        proj_base_offs_x *= mRenderBuffer.getSize().x / 1280.0f;
+        proj_base_offs_y /= 720;
         proj_base_offs_y *= mRenderBuffer.getSize().y / 720.0f;
 
-        proj_base_offs = mProjection.offset();
-
-        proj_base_offs.x += proj_base_offs_x;
+        rio::Vector2f proj_base_offs = mProjection.offset();
         proj_base_offs.y += proj_base_offs_y;
-
         mProjection.setOffset(proj_base_offs);
     }
 
@@ -181,7 +169,8 @@ void DistantViewMgr::calcView_(const rio::BaseVec2f& bg_screen_center, f32 bg_of
 
         rio::Vector2f proj_offset = mProjection.offset();
 
-        if ((++mFlickerCounter & 1) == 0)
+        mFlickerCounter ^= 1;
+        if (!mFlickerCounter)
         {
             proj_offset.x += flicker_proj_offs_x;
             proj_offset.y += flicker_proj_offs_y;
@@ -238,8 +227,6 @@ void DistantViewMgr::initialize(const std::string& dv_name, const std::string& d
     RIO_ASSERT(mpArchive);
 
     mArchiveRes.prepareArchive(mpArchive);
-
-  //mEnvTagMgr.initialize(mArchiveRes.getFile((dv_fname + ".opt").c_str()));
 
     mpCameraParam = new DVCameraParam(this, &mBgPos, dv_fname);
 
