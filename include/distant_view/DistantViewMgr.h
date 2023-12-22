@@ -29,9 +29,10 @@ public:
     DistantViewMgr(const agl::RenderBuffer& render_buffer);
     ~DistantViewMgr();
 
-private:
-    DistantViewMgr(const DistantViewMgr&);
-    DistantViewMgr& operator=(const DistantViewMgr&);
+    DistantViewMgr(const DistantViewMgr&) = delete;
+    DistantViewMgr(DistantViewMgr&&) = delete;
+    DistantViewMgr& operator=(const DistantViewMgr&) = delete;
+    DistantViewMgr& operator=(DistantViewMgr&&) = delete;
 
 private:
     void calcView_(const rio::BaseVec2f& bg_screen_center, f32 bg_offset_area_bottom_to_screen_bottom, f32 bg_zoom);

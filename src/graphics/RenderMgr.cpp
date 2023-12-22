@@ -10,10 +10,6 @@ RenderMgr::RenderMgr()
 {
 }
 
-RenderMgr::~RenderMgr()
-{
-}
-
 void RenderMgr::clear()
 {
     mRenderObj.clear();
@@ -108,10 +104,11 @@ void RenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu, 
 
 s32 RenderMgr::createView(RenderObjLayer* p_layer)
 {
-    s32 view_index = mViewInfo.size();
+    RIO_ASSERT(u32(mModelEnvView.getViewNum()) == getViewNum());
+    s32 view_index = getViewNum();
     ViewInfo& view_info = mViewInfo.emplace_back();
     view_info.p_layer = p_layer;
     mModelEnvView.addView();
-    RIO_ASSERT(u32(mModelEnvView.getViewNum()) == mViewInfo.size());
+    RIO_ASSERT(u32(mModelEnvView.getViewNum()) == getViewNum());
     return view_index;
 }

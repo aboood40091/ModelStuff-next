@@ -42,7 +42,7 @@ public:
 
 public:
     RenderMgr();
-    ~RenderMgr();
+    ~RenderMgr() { }
 
     void clear();
 
@@ -72,15 +72,20 @@ public:
     void setShadowMap(agl::TextureSampler* p_sampler) { mShadowMap = p_sampler; }
     void setReflectionMap(agl::TextureSampler* p_sampler) { mReflectionMap = p_sampler; }
 
+    u32 getViewNum() const
+    {
+        return mViewInfo.size();
+    }
+
     ViewInfo& getViewInfo(s32 view_index)
     {
-        RIO_ASSERT(u32(view_index) < mViewInfo.size());
+        RIO_ASSERT(u32(view_index) < getViewNum());
         return mViewInfo[view_index];
     }
 
     const ViewInfo& getViewInfo(s32 view_index) const
     {
-        RIO_ASSERT(u32(view_index) < mViewInfo.size());
+        RIO_ASSERT(u32(view_index) < getViewNum());
         return mViewInfo[view_index];
     }
 

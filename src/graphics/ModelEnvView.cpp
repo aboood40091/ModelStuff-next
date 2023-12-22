@@ -18,7 +18,7 @@ const ModelEnvView::Member ModelEnvView::cMember[] = {
 
 void ModelEnvView::addView()
 {
-    agl::UniformBlock& uniform_block = mUniformBlock.emplace_back();
+    agl::UniformBlock& uniform_block = *(mUniformBlock.emplace_back(std::make_unique<agl::UniformBlock>()).get());
     if (getViewNum() == 1)
     {
         uniform_block.startDeclare(cMemberNum);
@@ -27,7 +27,7 @@ void ModelEnvView::addView()
     }
     else
     {
-        uniform_block.declare(mUniformBlock[0]);
+        uniform_block.declare(*(mUniformBlock[0].get()));
     }
 
     uniform_block.create();
@@ -35,7 +35,7 @@ void ModelEnvView::addView()
 
 void ModelEnvView::setUniformData(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx)
 {
-    agl::UniformBlock& uniform_block = mUniformBlock[view_index];
+    agl::UniformBlock& uniform_block = *(mUniformBlock[view_index].get());
 
     uniform_block.dcbz();
 

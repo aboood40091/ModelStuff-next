@@ -29,6 +29,11 @@ public:
     Model();
     virtual ~Model();
 
+    Model(const Model&) = delete;
+    Model(Model&&) = delete;
+    Model& operator=(const Model&) = delete;
+    Model& operator=(Model&&) = delete;
+
     virtual void updateAnimations() = 0;
     virtual void updateModel() = 0;
     virtual void setMtxRT(const rio::Matrix34f& rt) = 0;

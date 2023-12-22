@@ -42,6 +42,11 @@ public:
     BasicModel(ModelG3d* p_model, u32 skl_anim_num, u32 tex_anim_num, u32 shu_anim_num, u32 vis_anim_num, u32 sha_anim_num);
     virtual ~BasicModel();
 
+    BasicModel(const BasicModel&) = delete;
+    BasicModel(BasicModel&&) = delete;
+    BasicModel& operator=(const BasicModel&) = delete;
+    BasicModel& operator=(BasicModel&&) = delete;
+
 public:
     ModelG3d* getModel() const { return mpModel; }
     ModelResource* getModelResource() const { return mpModelResource; }

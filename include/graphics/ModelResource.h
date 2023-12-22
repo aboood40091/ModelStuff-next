@@ -13,6 +13,11 @@ public:
     ModelResource();
     ~ModelResource();
 
+    ModelResource(const ModelResource&) = delete;
+    ModelResource(ModelResource&&) = delete;
+    ModelResource& operator=(const ModelResource&) = delete;
+    ModelResource& operator=(ModelResource&&) = delete;
+
     void destroy();
 
     void load(

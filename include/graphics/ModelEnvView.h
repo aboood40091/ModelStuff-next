@@ -4,6 +4,7 @@
 //#include <container/Buffer.h>
 #include <math/rio_Matrix.h>
 
+#include <memory>
 #include <vector>
 
 class ModelEnvView
@@ -40,17 +41,14 @@ public:
     static constexpr s32 cFogMax = 8;
 
 public:
-    ModelEnvView() {}
-    ~ModelEnvView() {}
-
     void addView();
 
     void setUniformData(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx);
 
     s32 getViewNum() const { return mUniformBlock.size(); }
-    const agl::UniformBlock& getUniformBlock(s32 view_index) const { return mUniformBlock[view_index]; }
+    const agl::UniformBlock& getUniformBlock(s32 view_index) const { return *(mUniformBlock[view_index].get()); }
 
 private:
-    std::vector<agl::UniformBlock>  mUniformBlock;
+    std::vector< std::unique_ptr<agl::UniformBlock> >  mUniformBlock;
 };
 //static_assert(sizeof(ModelEnvView) == 0xC);
