@@ -101,6 +101,9 @@ public:
     rio::Vector3f& cameraAtOffset() { return mCameraAtOffset; }
     const rio::Vector3f& cameraAtOffset() const { return mCameraAtOffset; }
 
+    rio::Vector2f& bgPos() { return reinterpret_cast<rio::Vector2f&>(mBgPos.x); }
+    const rio::Vector2f& bgPos() const { return reinterpret_cast<const rio::Vector2f&>(mBgPos.x); }
+
     void setFlickerEnable(bool enable)
     {
         mIsFlickerEnable = enable;
