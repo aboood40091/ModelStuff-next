@@ -60,4 +60,6 @@ protected:
     RenderMgr*              mpRenderMgr;
     s32                     mViewIndex;
     const CullViewFrustum*  mpCull;
+
+    friend class RenderMgr;
 };

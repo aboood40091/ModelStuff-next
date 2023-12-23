@@ -1,5 +1,6 @@
 #include <graphics/RenderMgr.h>
 #include <graphics/RenderObj.h>
+#include <graphics/RenderObjLayer.h>
 
 #include <algorithm>
 
@@ -102,7 +103,7 @@ void RenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu, 
     pushBackRenderObj(obj, draw_opa, draw_xlu);
 }
 
-s32 RenderMgr::createView(RenderObjLayer* p_layer)
+void RenderMgr::createView(RenderObjLayer* p_layer)
 {
     RIO_ASSERT(u32(mModelEnvView.getViewNum()) == getViewNum());
     s32 view_index = getViewNum();
@@ -110,5 +111,11 @@ s32 RenderMgr::createView(RenderObjLayer* p_layer)
     view_info.p_layer = p_layer;
     mModelEnvView.addView();
     RIO_ASSERT(u32(mModelEnvView.getViewNum()) == getViewNum());
-    return view_index;
+    p_layer->mViewIndex = view_index;
+}
+
+void RenderMgr::clearView()
+{
+    mModelEnvView.clearView();
+    mViewInfo.clear();
 }

@@ -32,9 +32,16 @@ void RenderObjLayer::initialize()
 
 void RenderObjLayer::setRenderMgr(RenderMgr* p_render_mgr)
 {
-    RIO_ASSERT(p_render_mgr != nullptr);
-    mViewIndex = p_render_mgr->createView(this);
-    mpRenderMgr = p_render_mgr;
+    if (p_render_mgr == nullptr)
+    {
+        mViewIndex = -1;
+        mpRenderMgr = nullptr;
+    }
+    else
+    {
+        p_render_mgr->createView(this);
+        mpRenderMgr = p_render_mgr;
+    }
 }
 
 void RenderObjLayer::calcView_(const rio::lyr::DrawInfo& draw_info)

@@ -33,6 +33,11 @@ void ModelEnvView::addView()
     uniform_block.create();
 }
 
+void ModelEnvView::clearView()
+{
+    mUniformBlock.clear();
+}
+
 void ModelEnvView::setUniformData(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx)
 {
     agl::UniformBlock& uniform_block = *(mUniformBlock[view_index].get());

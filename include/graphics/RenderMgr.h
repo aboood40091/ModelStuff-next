@@ -58,7 +58,8 @@ public:
     void pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu);
     void pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu, const rio::Vector3f& order_pos);
 
-    s32 createView(RenderObjLayer* p_layer);
+    void createView(RenderObjLayer* p_layer);
+    void clearView();
 
     ModelEnvView& getModelEnvView() { return mModelEnvView; }
     const ModelEnvView& getModelEnvView() const { return mModelEnvView; }

@@ -42,6 +42,7 @@ public:
 
 public:
     void addView();
+    void clearView();
 
     void setUniformData(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx);
 
