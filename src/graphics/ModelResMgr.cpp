@@ -1,6 +1,5 @@
-#include <Globals.h>
 #include <graphics/ModelResMgr.h>
-#include <resource/ResMgr.h>
+#include <system/ResMgr.h>
 
 ModelResMgr* ModelResMgr::sInstance = nullptr;
 
@@ -32,7 +31,7 @@ ModelResMgr::~ModelResMgr()
     RIO_ASSERT(mResMap.empty());
 }
 
-ModelResource* ModelResMgr::loadResFile(const std::string& key, const std::string& archive_name)
+ModelResource* ModelResMgr::loadResFile(const std::string& key, const std::string& archive_name, bool force_sharcfb)
 {
     {
         const auto& it = mResMap.find(key);
@@ -48,7 +47,7 @@ ModelResource* ModelResMgr::loadResFile(const std::string& key, const std::strin
         return nullptr;
 
     ModelResource* mdl_resource = new ModelResource;
-    mdl_resource->load(archive, archive_name.c_str(), Globals::forceSharcfb());
+    mdl_resource->load(archive, archive_name.c_str(), force_sharcfb);
 
     Resource res;
     res.ref_counter = 1;
@@ -59,7 +58,7 @@ ModelResource* ModelResMgr::loadResFile(const std::string& key, const std::strin
     return it.first->second.mdl_resource;
 }
 
-ModelResource* ModelResMgr::loadResFile(const std::string& key, const SharcArchiveRes* archive, const char* filename)
+ModelResource* ModelResMgr::loadResFile(const std::string& key, const SharcArchiveRes* archive, const char* filename, bool force_sharcfb)
 {
     {
         const auto& it = mResMap.find(key);
@@ -71,7 +70,7 @@ ModelResource* ModelResMgr::loadResFile(const std::string& key, const SharcArchi
     }
 
     ModelResource* mdl_resource = new ModelResource;
-    mdl_resource->load(archive, filename, Globals::forceSharcfb());
+    mdl_resource->load(archive, filename, force_sharcfb);
 
     Resource res;
     res.ref_counter = 1;

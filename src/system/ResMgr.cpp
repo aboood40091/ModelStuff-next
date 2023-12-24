@@ -1,5 +1,5 @@
-#include <resource/ResMgr.h>
 #include <resource/SZSDecompressor.h>
+#include <system/ResMgr.h>
 
 #include <filedevice/rio_FileDeviceMgr.h>
 
