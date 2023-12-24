@@ -6,12 +6,12 @@
 
 #include <string>
 
-class DistantViewMgr;
+class SharcArchiveRes;
 
 class DVCameraParam
 {
 public:
-    DVCameraParam(DistantViewMgr* dv_mgr, const rio::Vector3f* p_bg_pos, const std::string& dv_fname);
+    DVCameraParam(const SharcArchiveRes& dv_archive_res, const rio::Vector3f* p_bg_pos, const std::string& dv_fname);
 
     const rio::Vector2f& getProjOffset() const { return *mProjOffset; }
     s32 getTypeDirY() const { return *mTypeDirY; }

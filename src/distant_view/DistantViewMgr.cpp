@@ -1,9 +1,10 @@
 #include <distant_view/DistantViewMgr.h>
 #include <distant_view/DVCameraParam.h>
 #include <graphics/BasicModel.h>
-#include <graphics/ModelG3d.h>
+#include <graphics/ModelResMgr.h>
 #include <graphics/Renderer.h>
 #include <graphics/RenderObjLayer.h>
+#include <system/ResMgr.h>
 
 #include <filedevice/rio_FileDeviceMgr.h>
 #include <g3d/aglTextureDataInitializerG3D.h>
@@ -39,7 +40,6 @@ DistantViewMgr::DistantViewMgr(const agl::RenderBuffer& render_buffer)
     , mFlickerCounter(false)
     , mFlickerOffset{0.375f, 0.375f}
     // Custom
-    , mpArchive(nullptr)
     , mpDofFile(nullptr)
     , mRenderBuffer(render_buffer)
 {
@@ -79,24 +79,19 @@ void DistantViewMgr::destroy()
 
     if (mpBasicModel)
     {
+        const std::string& dv_name = mpBasicModel->getModel()->getName();
+
         BasicModel::destroy(mpBasicModel);
         mpBasicModel = nullptr;
-    }
 
-    if (mModelRes.getResFile())
-        mModelRes.destroy();
+        ModelResMgr::instance()->destroyResFile(dv_name);
+        ResMgr::instance()->destroyArchiveRes(dv_name);
+    }
 
     if (mpCameraParam)
     {
         delete mpCameraParam;
         mpCameraParam = nullptr;
-    }
-
-    if (mpArchive)
-    {
-        mArchiveRes.destroy();
-        rio::MemUtil::free(mpArchive);
-        mpArchive = nullptr;
     }
 
     if (mpDofFile)
@@ -190,31 +185,25 @@ void DistantViewMgr::applyDepthOfField()
     mDof.draw(0, mRenderBuffer, mProjection.getNear(), mProjection.getFar());
 }
 
-void DistantViewMgr::initialize(const std::string& dv_name, const std::string& dv_path, bool force_sharcfb, const rio::BaseVec2f& bg_pos, const rio::BaseVec2f& bg_screen_center, f32 bg_offset_area_bottom_to_screen_bottom, f32 bg_zoom)
+void DistantViewMgr::initialize(const std::string& dv_base_name, const std::string& dv_path, bool force_sharcfb, const rio::BaseVec2f& bg_pos, const rio::BaseVec2f& bg_screen_center, f32 bg_offset_area_bottom_to_screen_bottom, f32 bg_zoom)
 {
     destroy();
 
-    const std::string& dv_fname = "dv_" + dv_name;
+    const std::string& dv_name = "dv_" + dv_base_name;
+    const std::string& dv_fname = dv_name + ".szs";
     const std::string& dv_fpath = dv_path.empty() ? dv_fname : dv_path + "/" + dv_fname;
 
     mDof.setEnable(false);
 
     mBgPos.set(bg_pos.x, bg_pos.y, 0.0f);
 
-    rio::FileDevice::LoadArg arg;
-    arg.path = dv_fpath;
-    arg.path += ".szs";
-    arg.alignment = 0x2000;
+    const SharcArchiveRes* archive_res = ResMgr::instance()->loadArchiveRes(dv_name, dv_fpath, true);
+    RIO_ASSERT(archive_res);
 
-    mpArchive = SZSDecompressor::tryDecomp(arg);
-    RIO_ASSERT(mpArchive);
-
-    mArchiveRes.prepareArchive(mpArchive);
-
-    mpCameraParam = new DVCameraParam(this, &mBgPos, dv_fname);
+    mpCameraParam = new DVCameraParam(*archive_res, &mBgPos, dv_name);
 
     u32 dof_file_size = 0;
-    const void* const p_dof_file = mArchiveRes.getFileConst((dv_fname + ".bagldof").c_str(), &dof_file_size);
+    const void* const p_dof_file = archive_res->getFileConst((dv_name + ".bagldof").c_str(), &dof_file_size);
     if (p_dof_file && dof_file_size)
     {
         mpDofFile = rio::MemUtil::alloc(dof_file_size, 4);
@@ -228,31 +217,34 @@ void DistantViewMgr::initialize(const std::string& dv_name, const std::string& d
         mDof.setEnable(false);
     }
 
-    const char* const dv_fname_c = dv_fname.c_str();
+    const char* const dv_name_c = dv_name.c_str();
 
-    mModelRes.load(&mArchiveRes, dv_fname_c, force_sharcfb);
+    const ModelResource* model_res = ModelResMgr::instance()->loadResFile(dv_name, archive_res, dv_name_c, force_sharcfb);
+    RIO_ASSERT(model_res);
 
-    ModelG3d* p_mdl = Model::createG3d(mModelRes, dv_fname_c, 1, 1, 1, 2, 0, 0, Model::cBoundingMode_Enable);
-    BasicModel* p_basic_mdl = new BasicModel(p_mdl, 1, 1, 2, 0, 0);
-    p_basic_mdl->init(&mModelRes);
-    mpBasicModel = p_basic_mdl;
+    mpBasicModel = BasicModel::create(
+        const_cast<ModelResource*>(model_res),
+        dv_name_c,
+        1, 1, 1, 2, 0, 0,
+        Model::cBoundingMode_Enable
+    );
 
-    if (mModelRes.getResFile()->GetSkeletalAnimCount() > 0)
-        mpBasicModel->getSklAnim(0)->play(&mModelRes, dv_fname_c);
+    if (model_res->getResFile()->GetSkeletalAnimCount() > 0)
+        mpBasicModel->getSklAnim(0)->play(model_res, dv_name_c);
 
-    if (mModelRes.getResFile()->GetTexSrtAnimCount() > 0)
-        mpBasicModel->getShuAnim(0)->playTexSrtAnim(&mModelRes, dv_fname_c);
+    if (model_res->getResFile()->GetTexSrtAnimCount() > 0)
+        mpBasicModel->getShuAnim(0)->playTexSrtAnim(model_res, dv_name_c);
 
-    if (mModelRes.getResFile()->GetColorAnimCount() > 0)
-        mpBasicModel->getShuAnim(1)->playColorAnim(&mModelRes, dv_fname_c);
+    if (model_res->getResFile()->GetColorAnimCount() > 0)
+        mpBasicModel->getShuAnim(1)->playColorAnim(model_res, dv_name_c);
 
-    if (mModelRes.getResFile()->GetTexPatternAnimCount() > 0)
-        mpBasicModel->getTexAnim(0)->play(&mModelRes, dv_fname_c);
+    if (model_res->getResFile()->GetTexPatternAnimCount() > 0)
+        mpBasicModel->getTexAnim(0)->play(model_res, dv_name_c);
 
-    s32 idx_dof_ind = mModelRes.getResFile()->GetTextureIndex("dof_indirect");
+    s32 idx_dof_ind = model_res->getResFile()->GetTextureIndex("dof_indirect");
     if (idx_dof_ind >= 0)
     {
-        nw::g3d::res::ResTexture* p_dof_ind = mModelRes.getResFile()->GetTexture(idx_dof_ind);
+        nw::g3d::res::ResTexture* p_dof_ind = model_res->getResFile()->GetTexture(idx_dof_ind);
 
         mpDofIndTexture = new agl::TextureData();
 

@@ -43,7 +43,7 @@ public:
     void applyDepthOfField();
 
     void initialize(
-        const std::string& dv_name = "Nohara", const std::string& dv_path = "",
+        const std::string& dv_base_name = "Nohara", const std::string& dv_path = "",
         bool force_sharcfb = false,
         const rio::BaseVec2f& bg_pos = { 0.0f, 0.0f },
         const rio::BaseVec2f& bg_screen_center = { 0.0f, 0.0f },
@@ -153,13 +153,7 @@ private:
     rio::Vector2f               mFlickerOffset;
 
     // Custom
-    u8*                         mpArchive;
-    SharcArchiveRes             mArchiveRes;
-    ModelResource               mModelRes;
     void*                       mpDofFile;
-
     const agl::RenderBuffer&    mRenderBuffer;
-
-    friend class DVCameraParam;
 };
 //static_assert(sizeof(DistantViewMgr) == 0x1460);

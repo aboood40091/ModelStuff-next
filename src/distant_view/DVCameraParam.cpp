@@ -1,7 +1,7 @@
-#include <distant_view/DistantViewMgr.h>
 #include <distant_view/DVCameraParam.h>
+#include <resource/SharcArchiveRes.h>
 
-DVCameraParam::DVCameraParam(DistantViewMgr* dv_mgr, const rio::Vector3f* p_bg_pos, const std::string& dv_name)
+DVCameraParam::DVCameraParam(const SharcArchiveRes& dv_archive_res, const rio::Vector3f* p_bg_pos, const std::string& dv_name)
     : mProjOffset           (rio::Vector2f{0.0f, 0.0f}, &mParamList, "mProjOffset")
     , mTypeDirY             (0,                         &mParamList, "mTypeDirY")
     , mMagnifProjOffsetY    (0.3f,                      &mParamList, "mMagnifProjOffsetY")
@@ -13,7 +13,7 @@ DVCameraParam::DVCameraParam(DistantViewMgr* dv_mgr, const rio::Vector3f* p_bg_p
     , mpBgPos(p_bg_pos)
 {
     u32 size = 0;
-    const void* const file = dv_mgr->mArchiveRes.getFileConst((dv_name + ".camera").c_str(), &size);
+    const void* const file = dv_archive_res.getFileConst((dv_name + ".camera").c_str(), &size);
 
     if (file)
         mParamList.read(file, size);
