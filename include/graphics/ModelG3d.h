@@ -97,7 +97,7 @@ public:
         LightMap                        light_map;
         Buffer<nw::g3d::fnd::GfxBuffer> vtx_buffer;
     };
-#if !RIO_IS_WIN
+#if !RIO_IS_DESKTOP
     static_assert(sizeof(Shape) == 0x2C);
 #endif
 

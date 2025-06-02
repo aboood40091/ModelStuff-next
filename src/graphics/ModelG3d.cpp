@@ -826,7 +826,7 @@ void ModelG3d::drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_inf
 
 #if RIO_IS_CAFE
                             GX2SetPolygonOffset(units, factor, units, factor, 0.0f);
-#elif RIO_IS_WIN
+#elif RIO_IS_DESKTOP
                             RIO_GL_CALL(glPolygonOffset(factor, units));
 #endif
                         }
@@ -848,7 +848,7 @@ void ModelG3d::drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_inf
         }
     }
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
     const rio::Shader* p_shader_rio = draw_info.p_shader_program->getShaderRIO();
     RIO_ASSERT(p_shader_rio);
 
@@ -856,7 +856,7 @@ void ModelG3d::drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_inf
     p_shader_rio->setUniform(nw::g3d::fnd::s_AlphaRefValue,             u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.alphaRef"));
     p_shader_rio->setUniform(mItemID,                                   u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.uItemID"));
     p_shader_rio->setUniform(mIsSelected,                               u32(-1), p_shader_rio->getFragmentUniformLocation("PS_PUSH.uIsSelected"));
-#endif // RIO_IS_WIN
+#endif // RIO_IS_DESKTOP
 
     if (!render_info.attrib_dl.isEmpty())
         render_info.attrib_dl.call();

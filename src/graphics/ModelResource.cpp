@@ -116,9 +116,9 @@ void ModelResource::load(
             agl::ResShaderArchiveData* res_shader_archive = nullptr;
             agl::ResBinaryShaderArchiveData* res_binary_shader_archive = nullptr;
 
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
             if (force_sharcfb)
-#endif // RIO_IS_WIN
+#endif // RIO_IS_DESKTOP
             {
                 u32 file_size = 0;
                 const void* const file = archive->getFileConst(
@@ -132,7 +132,7 @@ void ModelResource::load(
                     rio::MemUtil::copy(res_binary_shader_archive, file, file_size);
                 }
             }
-#if RIO_IS_WIN
+#if RIO_IS_DESKTOP
             else
             {
                 u32 file_size = 0;
@@ -147,7 +147,7 @@ void ModelResource::load(
                     rio::MemUtil::copy(res_shader_archive, file, file_size);
                 }
             }
-#endif // RIO_IS_WIN
+#endif // RIO_IS_DESKTOP
 
             mModelShaderArchive[idx_model].obj = shader_program_archive;
 
