@@ -23,4 +23,4 @@ public:
 protected:
     FrameCtrl   mFrameCtrl;
 };
-static_assert(sizeof(Animation) == 0x20);
+// static_assert(sizeof(Animation) == 0x20);

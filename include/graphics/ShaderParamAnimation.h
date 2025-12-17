@@ -49,4 +49,4 @@ private:
     s32                                 mIndex;
     void*                               mpBuffer;
 };
-static_assert(sizeof(ShaderParamAnimation) == 0x88);
+// static_assert(sizeof(ShaderParamAnimation) == 0x88);

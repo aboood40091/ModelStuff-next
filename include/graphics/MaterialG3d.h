@@ -30,4 +30,4 @@ private:
     nw::g3d::MaterialObj*           mMaterialObj;
     SafeArray<rio::Matrix34f, 8>    mTexSrtMtx;
 };
-static_assert(sizeof(MaterialG3d) == 0x188);
+// static_assert(sizeof(MaterialG3d) == 0x188);

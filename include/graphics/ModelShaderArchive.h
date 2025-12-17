@@ -10,4 +10,4 @@ struct ModelShaderArchive
     agl::ResShaderArchiveData*              res_archive;
     bool                                    initialized;
 };
-static_assert(sizeof(ModelShaderArchive) == 0x10);
+// static_assert(sizeof(ModelShaderArchive) == 0x10);

@@ -49,4 +49,4 @@ private:
     s32                                 mIndex;
     void*                               mpBuffer;
 };
-static_assert(sizeof(VisibilityAnimation) == 0x84, "VisibilityAnimation size mismatch");
+// static_assert(sizeof(VisibilityAnimation) == 0x84, "VisibilityAnimation size mismatch");

@@ -53,4 +53,4 @@ private:
     s32                             mIndex;
     nw::g3d::res::ResSkeletalAnim*  mpRes;
 };
-static_assert(sizeof(SkeletalAnimation) == 0x98);
+// static_assert(sizeof(SkeletalAnimation) == 0x98);

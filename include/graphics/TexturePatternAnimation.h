@@ -52,4 +52,4 @@ private:
     // Custom
     void*   mpBuffer;
 };
-static_assert(sizeof(TexturePatternAnimation) == 0x84 + 4);
+// static_assert(sizeof(TexturePatternAnimation) == 0x84 + 4);

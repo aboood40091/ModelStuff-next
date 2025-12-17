@@ -60,7 +60,7 @@ void MaterialG3d::setTexSrtMtx(s32 index, const rio::Vector2f& scale, const u32&
             mTexSrtMtx[index].m[2][2] =  0.0f;
             mTexSrtMtx[index].m[2][3] =  1.0f;
 
-            srt.pEffectMtx = (nw::g3d::math::Mtx34*)(&mTexSrtMtx[index]);
+            srt.pEffectMtx.set((nw::g3d::math::Mtx34*)(&mTexSrtMtx[index]));
         }
     }
 }

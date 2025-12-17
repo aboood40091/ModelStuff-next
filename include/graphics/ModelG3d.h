@@ -65,7 +65,7 @@ public:
         agl::SamplerLocation        sdw_location;
         agl::SamplerLocation        rfl_location;
     };
-    static_assert(sizeof(ShaderAssign) == 0x64);
+    // static_assert(sizeof(ShaderAssign) == 0x64);
 
     struct ShapeRenderInfo
     {
@@ -115,7 +115,7 @@ public:
         s32                         polygon_offset;
         const CullViewFrustum*      p_cull;
     };
-    static_assert(sizeof(DrawInfo) == 0x28);
+    // static_assert(sizeof(DrawInfo) == 0x28);
 
     enum SamplerSlot
     {

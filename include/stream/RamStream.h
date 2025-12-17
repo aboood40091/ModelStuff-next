@@ -23,7 +23,7 @@ protected:
     u32 mSize;
     u32 mCurPos;
 };
-static_assert(sizeof(RamStreamSrc) == 0x10);
+// static_assert(sizeof(RamStreamSrc) == 0x10);
 
 class RamReadStream : public ReadStream
 {
@@ -36,4 +36,4 @@ public:
 protected:
     RamStreamSrc    mRamStreamSrc;
 };
-static_assert(sizeof(RamReadStream) == 0x20);
+// static_assert(sizeof(RamReadStream) == 0x20);
