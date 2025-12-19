@@ -406,9 +406,9 @@ void ModelG3d::initialize(nw::g3d::res::ResModel* res_model, const agl::ShaderPr
     mXluShapeInfo.sort(&sortShapeRenderInfoCmp);
 }
 
-s32 ModelG3d::sortShapeRenderInfoCmp(const ShapeRenderInfo* a, const ShapeRenderInfo* b)
+s32 ModelG3d::sortShapeRenderInfoCmp(const void* a, const void* b)
 {
-    return a->priority - b->priority;
+    return static_cast<const ShapeRenderInfo*>(a)->priority - static_cast<const ShapeRenderInfo*>(b)->priority;
 }
 
 void ModelG3d::initializeShapeRenderInfo_(ShapeRenderInfo& render_info, const nw::g3d::MaterialObj* p_material, const nw::g3d::ShapeObj* p_shape)

@@ -381,7 +381,7 @@ public:
 
 private:
     void initializeShapeRenderInfo_(ShapeRenderInfo& render_info, const nw::g3d::MaterialObj* p_material, const nw::g3d::ShapeObj* p_shape);
-    static s32 sortShapeRenderInfoCmp(const ShapeRenderInfo* a, const ShapeRenderInfo* b);
+    static s32 sortShapeRenderInfoCmp(const void* a, const void* b);
     void calcBounding_();
     void applyBlendWeight_(s32 shape_index);
     static void setBoundingFlagArray_(BoundingFlagArray& flag_array, const SkeletalAnimation& anim);
