@@ -8,24 +8,25 @@
 namespace rio {
 
 class Camera;
+class OrthoProjection;
 class PerspectiveProjection;
 
 }
 
 class CullViewFrustum
 {
-    struct Sub
+    struct Plane
     {
-        Sub()
-            : _0{1.0f, 0.0f, 0.0f}
-            , _c(0.0f)
+        Plane()
+            : normal{1.0f, 0.0f, 0.0f}
+            , distance(0.0f)
         {
         }
 
-        rio::Vector3f   _0;
-        f32             _c;
+        rio::Vector3f   normal;
+        f32             distance;
     };
-    static_assert(sizeof(Sub) == 0x10);
+    static_assert(sizeof(Plane) == 0x10);
 
 public:
     CullViewFrustum();
@@ -34,9 +35,13 @@ public:
     const nw::g3d::ViewVolume& getViewVolume() const { return mViewVolume; }
 
     void update(const rio::Camera& camera, const rio::PerspectiveProjection& projection);
+    void update(const rio::Camera& camera, const rio::OrthoProjection& projection);
+
+    bool testIntersectionSphere(const rio::Vector3f& pos, f32 radius) const;   // I think
+    bool testIntersectionAABB(const rio::Vector3f& min, const rio::Vector3f& max) const;
 
 private:
-    UnsafeArray<Sub, 4> _0;
-    nw::g3d::ViewVolume mViewVolume;
+    UnsafeArray<Plane, 4>   mPlane;
+    nw::g3d::ViewVolume     mViewVolume;
 };
 static_assert(sizeof(CullViewFrustum) == 0xC0);
