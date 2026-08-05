@@ -23,13 +23,13 @@ private:
     ShaderHolder& operator=(const ShaderHolder&);
 
 public:
-    void initialize(const std::string& arc_path);
+    [[nodiscard]] bool initialize(const std::string& arc_path);
 
 private:
     agl::ShaderProgramArchive* createShaderArchive_(const std::string& filename) const;
     void pushBackShaderArchive_(const std::string& filename, agl::ShaderProgramArchive* p_archive);
 
-    void createAndPushBackShaderArchive_(const std::string& filename);
+    [[nodiscard]] bool createAndPushBackShaderArchive_(const std::string& filename);
 
 public:
     const agl::ShaderProgramArchive* getShaderArchive(const std::string& filename) const;

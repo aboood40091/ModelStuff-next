@@ -42,7 +42,7 @@ ShaderHolder::~ShaderHolder()
     }
 }
 
-void ShaderHolder::initialize(const std::string& arc_path)
+bool ShaderHolder::initialize(const std::string& arc_path)
 {
     if (mpArchive)
     {
@@ -57,9 +57,15 @@ void ShaderHolder::initialize(const std::string& arc_path)
     arg.alignment = 0x2000;
 
     mpArchive = SZSDecompressor::tryDecomp(arg);
-    RIO_ASSERT(mpArchive);
+    if (mpArchive == nullptr)
+    {
+        RIO_LOG("ShaderHolder::initialize(): failed to load \"%s\"\n", arg.path.c_str());
+        return false;
+    }
 
     mArchiveRes.prepareArchive(mpArchive);
+
+    bool success = true;
 
     /* bg_renderer
     {
@@ -81,23 +87,23 @@ void ShaderHolder::initialize(const std::string& arc_path)
     }*/
     // nw4f_cs_shader
     {
-        createAndPushBackShaderArchive_("nw4f_cs_shader");
+        success = createAndPushBackShaderArchive_("nw4f_cs_shader") && success;
     }
     // nw4f_cs_water_shader
     {
-        createAndPushBackShaderArchive_("nw4f_cs_water_shader");
+        success = createAndPushBackShaderArchive_("nw4f_cs_water_shader") && success;
     }
     // nw4f_dv_shader
     {
-        createAndPushBackShaderArchive_("nw4f_dv_shader");
+        success = createAndPushBackShaderArchive_("nw4f_dv_shader") && success;
     }
     // nw4f_koopa_shader
     {
-        createAndPushBackShaderArchive_("nw4f_koopa_shader");
+        success = createAndPushBackShaderArchive_("nw4f_koopa_shader") && success;
     }
     // nw4f_shader
     {
-        createAndPushBackShaderArchive_("nw4f_shader");
+        success = createAndPushBackShaderArchive_("nw4f_shader") && success;
     }
     /* quad_cloud_shader
     {
@@ -123,6 +129,8 @@ void ShaderHolder::initialize(const std::string& arc_path)
         MosaicFilter::initializeShader(p_archive);
         pushBackShaderArchive_("mosaic_filter", p_archive);
     }*/
+
+    return success;
 }
 
 agl::ShaderProgramArchive* ShaderHolder::createShaderArchive_(const std::string& filename) const
@@ -130,6 +138,12 @@ agl::ShaderProgramArchive* ShaderHolder::createShaderArchive_(const std::string&
     agl::ResBinaryShaderArchiveData* res_binary_shader_archive = static_cast<agl::ResBinaryShaderArchiveData*>(
         mArchiveRes.getFileMutable((filename + ".sharcfb").c_str())
     );
+
+    if (res_binary_shader_archive == nullptr)
+    {
+        RIO_LOG("ShaderHolder: \"%s.sharcfb\" not found in archive\n", filename.c_str());
+        return nullptr;
+    }
 
     agl::ShaderProgramArchive* p_archive = new agl::ShaderProgramArchive();
     p_archive->createWithOption(res_binary_shader_archive, nullptr, 2);
@@ -147,10 +161,14 @@ void ShaderHolder::pushBackShaderArchive_(const std::string& filename, agl::Shad
     mShaderArchiveMap[filename] = p_archive;
 }
 
-void ShaderHolder::createAndPushBackShaderArchive_(const std::string& filename)
+bool ShaderHolder::createAndPushBackShaderArchive_(const std::string& filename)
 {
     agl::ShaderProgramArchive* p_archive = createShaderArchive_(filename);
+    if (p_archive == nullptr)
+        return false;
+
     pushBackShaderArchive_(filename, p_archive);
+    return true;
 }
 
 const agl::ShaderProgramArchive* ShaderHolder::getShaderArchive(const std::string& filename) const
@@ -170,5 +188,8 @@ const agl::ShaderProgramArchive* ShaderHolder::getNw4fShaderArchive() const
 const agl::ShaderProgram* ShaderHolder::getNw4fBasicShaderProgram() const
 {
     const agl::ShaderProgramArchive* p_archive = getNw4fShaderArchive();
+    if (p_archive == nullptr)
+        return nullptr;
+
     return p_archive->searchShaderProgram("nw4f_basic_shader");
 }
