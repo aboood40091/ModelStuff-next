@@ -3,7 +3,7 @@
 #include <gfx/lyr/rio_Layer.h>
 
 class CullViewFrustum;
-class RenderMgr;
+class RenderObjRenderMgr;
 
 class RenderObjLayer : public rio::lyr::Layer, public rio::lyr::IDrawable
 {
@@ -30,12 +30,12 @@ public:
         return mViewIndex;
     }
 
-    RenderMgr* getRenderMgr() const
+    RenderObjRenderMgr* getRenderMgr() const
     {
         return mpRenderMgr;
     }
 
-    void setRenderMgr(RenderMgr* p_render_mgr);
+    void setRenderMgr(RenderObjRenderMgr* p_render_mgr);
 
     const CullViewFrustum* getCullViewFrustum() const
     {
@@ -57,9 +57,9 @@ private:
     void render_(const rio::lyr::DrawInfo& draw_info);
 
 protected:
-    RenderMgr*              mpRenderMgr;
+    RenderObjRenderMgr*     mpRenderMgr;
     s32                     mViewIndex;
     const CullViewFrustum*  mpCull;
 
-    friend class RenderMgr;
+    friend class RenderObjRenderMgr;
 };

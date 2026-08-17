@@ -1,6 +1,6 @@
 #include <distant_view/DistantViewMgr.h>
 #include <distant_view/DVCameraParam.h>
-#include <graphics/BasicModel.h>
+#include <graphics/AnimModel.h>
 #include <graphics/ModelResMgr.h>
 #include <graphics/Renderer.h>
 #include <graphics/RenderObjLayer.h>
@@ -30,7 +30,7 @@ DistantViewMgr::DistantViewMgr(const agl::RenderBuffer& render_buffer)
     , mCamera()
     , mProjection(mNear, mFar, rio::Mathf::deg2rad(mFovyDeg), f32(render_buffer.getSize().x) / f32(render_buffer.getSize().y))
     , mCull()
-    , mpBasicModel(nullptr)
+    , mpAnimModel(nullptr)
     , mpCameraParam(nullptr)
     , mBgPos{0.0f, 0.0f, 0.0f}
     , mDof()
@@ -58,7 +58,7 @@ DistantViewMgr::~DistantViewMgr()
 
 void DistantViewMgr::destroy()
 {
-    if (mpBasicModel)
+    if (mpAnimModel)
     {
 #if RIO_IS_CAFE
         GX2DrawDone();
@@ -77,12 +77,11 @@ void DistantViewMgr::destroy()
         mpDofIndTexture = nullptr;
     }
 
-    if (mpBasicModel)
+    if (mpAnimModel)
     {
-        const std::string& dv_name = mpBasicModel->getModel()->getName();
+        const std::string& dv_name = mpAnimModel->getModel()->getName();
 
-        BasicModel::destroy(mpBasicModel);
-        mpBasicModel = nullptr;
+        AnimModel::destroy(mpAnimModel);
 
         ModelResMgr::instance()->destroyResFile(dv_name);
         ResMgr::instance()->destroyArchiveRes(dv_name);
@@ -172,7 +171,7 @@ void DistantViewMgr::calcView_(const rio::BaseVec2f& bg_screen_center, f32 bg_of
 
 void DistantViewMgr::calcModelMtx_()
 {
-    ModelG3d* p_model = mpBasicModel->getModel();
+    ModelG3d* p_model = mpAnimModel->getModel();
 
     rio::Matrix34f model_mtx;
     mpCameraParam->getModelMtx(&model_mtx);
@@ -222,7 +221,7 @@ void DistantViewMgr::initialize(const std::string& dv_base_name, const std::stri
     const ModelResource* model_res = ModelResMgr::instance()->loadResFile(dv_name, archive_res, dv_name_c, force_sharcfb);
     RIO_ASSERT(model_res);
 
-    mpBasicModel = BasicModel::create(
+    mpAnimModel = AnimModel::create(
         const_cast<ModelResource*>(model_res),
         dv_name_c,
         1, 1, 1, 2, 0, 0,
@@ -230,16 +229,16 @@ void DistantViewMgr::initialize(const std::string& dv_base_name, const std::stri
     );
 
     if (model_res->getResFile()->GetSkeletalAnimCount() > 0)
-        mpBasicModel->getSklAnim(0)->play(model_res, dv_name_c);
+        mpAnimModel->getSklAnim(0)->play(model_res, dv_name_c);
 
     if (model_res->getResFile()->GetTexSrtAnimCount() > 0)
-        mpBasicModel->getShuAnim(0)->playTexSrtAnim(model_res, dv_name_c);
+        mpAnimModel->getShuAnim(0)->playTexSrtAnim(model_res, dv_name_c);
 
     if (model_res->getResFile()->GetColorAnimCount() > 0)
-        mpBasicModel->getShuAnim(1)->playColorAnim(model_res, dv_name_c);
+        mpAnimModel->getShuAnim(1)->playColorAnim(model_res, dv_name_c);
 
     if (model_res->getResFile()->GetTexPatternAnimCount() > 0)
-        mpBasicModel->getTexAnim(0)->play(model_res, dv_name_c);
+        mpAnimModel->getTexAnim(0)->play(model_res, dv_name_c);
 
     s32 idx_dof_ind = model_res->getResFile()->GetTextureIndex("dof_indirect");
     if (idx_dof_ind >= 0)
@@ -262,22 +261,22 @@ void DistantViewMgr::initialize(const std::string& dv_base_name, const std::stri
     calcView_(bg_screen_center, bg_offset_area_bottom_to_screen_bottom, bg_zoom);
     calcModelMtx_();
 
-    mpBasicModel->updateModel();
+    mpAnimModel->calcMdl();
 }
 
 void DistantViewMgr::resetAnim()
 {
-    SkeletalAnimation* const p_skl_anim = mpBasicModel->getSklAnim(0);
+    SkeletalAnimation* const p_skl_anim = mpAnimModel->getSklAnim(0);
     if (p_skl_anim)
         p_skl_anim->getFrameCtrl().reset();
 
-    TexturePatternAnimation* const p_tex_anim = mpBasicModel->getTexAnim(0);
+    TexturePatternAnimation* const p_tex_anim = mpAnimModel->getTexAnim(0);
     if (p_tex_anim)
         p_tex_anim->getFrameCtrl().reset();
 
     for (s32 i = 0; i < 2; i++)
     {
-        ShaderParamAnimation* const p_shu_anim = mpBasicModel->getShuAnim(i);
+        ShaderParamAnimation* const p_shu_anim = mpAnimModel->getShuAnim(i);
         if (p_shu_anim)
             p_shu_anim->getFrameCtrl().reset();
     }
@@ -285,30 +284,30 @@ void DistantViewMgr::resetAnim()
 
 SkeletalAnimation* DistantViewMgr::getSklAnim() const
 {
-    return mpBasicModel->getSklAnim(0);
+    return mpAnimModel->getSklAnim(0);
 }
 
 TexturePatternAnimation* DistantViewMgr::getTexAnim() const
 {
-    return mpBasicModel->getTexAnim(0);
+    return mpAnimModel->getTexAnim(0);
 }
 
 ShaderParamAnimation* DistantViewMgr::getShuTexSrtAnim() const
 {
-    return mpBasicModel->getShuAnim(0);
+    return mpAnimModel->getShuAnim(0);
 }
 
 ShaderParamAnimation* DistantViewMgr::getShuColorAnim() const
 {
-    return mpBasicModel->getShuAnim(1);
+    return mpAnimModel->getShuAnim(1);
 }
 
 void DistantViewMgr::update(RenderObjLayer* p_layer, const rio::BaseVec2f& bg_screen_center, f32 bg_offset_area_bottom_to_screen_bottom, f32 bg_zoom)
 {
     calcView_(bg_screen_center, bg_offset_area_bottom_to_screen_bottom, bg_zoom);
 
-    mpBasicModel->updateAnimations();
-    mpBasicModel->updateModel();
+    mpAnimModel->playAnmFrameCtrl();
+    mpAnimModel->calcMdl();
 
     mDofIndScroll += mpCameraParam->getIndirectScrollSpd();
 
@@ -328,7 +327,7 @@ void DistantViewMgr::draw(RenderObjLayer* p_layer)
 {
     Renderer::instance()->setLayer(p_layer);
     {
-        Renderer::instance()->drawModel(*mpBasicModel);
+        Renderer::instance()->drawModel(*mpAnimModel);
     }
     Renderer::instance()->resetLayer();
 }

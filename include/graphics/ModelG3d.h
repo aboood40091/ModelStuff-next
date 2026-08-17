@@ -182,10 +182,10 @@ public:
     void calc() override;
 
     // Updates buffers for the GPU
-    void calcGPU(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
+    void calcGPU(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
 
     // (Does nothing)
-    void updateView(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override
+    void updateView(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override
     {
     }
 
@@ -195,15 +195,15 @@ public:
     // 1. Shadow-only shapes and reflection-only shapes are always invisible
     // 2. Shadow casting for a shape is automatically enabled if "shadow_cast" is not present in its material's render info
 
-    void drawOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
-    void drawXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
+    void drawOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
+    void drawXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
 
     // This draws the shadow of shadow-casting shapes
-    void drawShadowOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
+    void drawShadowOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
 
     // These draws the reflection on shapes
-    void drawReflectionOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
-    void drawReflectionXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) override;
+    void drawReflectionOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
+    void drawReflectionXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) override;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -216,8 +216,8 @@ public:
     ModelG3d();
     virtual ~ModelG3d();
 
-    void updateAnimations() override;
-    void updateModel() override;
+    void calcAnm() override;
+    void calcMdl() override;
 
     // Rotation + Translation matrix
     void setMtxRT(const rio::Matrix34f& rt) override
@@ -340,9 +340,19 @@ public:
         return const_cast<SkeletalAnimation**>(reinterpret_cast<SkeletalAnimation* const*>(getSklAnims()));
     }
 
+    u32 getSklAnimBufferSize() const
+    {
+        return mpSklAnim.size();
+    }
+
     TexturePatternAnimation** getTexAnimBuffer()
     {
         return const_cast<TexturePatternAnimation**>(reinterpret_cast<TexturePatternAnimation* const*>(getTexAnims()));
+    }
+
+    u32 getTexAnimBufferSize() const
+    {
+        return mpTexAnim.size();
     }
 
     ShaderParamAnimation** getShuAnimBuffer()
@@ -350,14 +360,29 @@ public:
         return const_cast<ShaderParamAnimation**>(reinterpret_cast<ShaderParamAnimation* const*>(getShuAnims()));
     }
 
+    u32 getShuAnimBufferSize() const
+    {
+        return mpShuAnim.size();
+    }
+
     VisibilityAnimation** getVisAnimBuffer()
     {
         return const_cast<VisibilityAnimation**>(reinterpret_cast<VisibilityAnimation* const*>(getVisAnims()));
     }
 
+    u32 getVisAnimBufferSize() const
+    {
+        return mpVisAnim.size();
+    }
+
     ShapeAnimation** getShaAnimBuffer()
     {
         return const_cast<ShapeAnimation**>(reinterpret_cast<ShapeAnimation* const*>(getShaAnims()));
+    }
+
+    u32 getShaAnimBufferSize() const
+    {
+        return mpShaAnim.size();
     }
 
 public:
@@ -368,6 +393,9 @@ public:
 
     Shape& getShape(s32 index) { return mShape[index]; }
     const Shape& getShape(s32 index) const { return mShape[index]; }
+
+    rio::BitFlag32& getRenderFlag() { return mRenderFlag; }
+    const rio::BitFlag32& getRenderFlag() const { return mRenderFlag; }
 
     void activateMaterial(const agl::g3d::ModelShaderAssign& shader_assign, const nw::g3d::MaterialObj* p_material, const LightMap& light_map) const;
 
@@ -386,10 +414,10 @@ private:
     void applyBlendWeight_(s32 shape_index);
     static void setBoundingFlagArray_(BoundingFlagArray& flag_array, const SkeletalAnimation& anim);
 
-    void drawOpa_(DrawInfo& draw_info, const RenderMgr* p_render_mgr) const;
-    void drawXlu_(DrawInfo& draw_info, const RenderMgr* p_render_mgr) const;
+    void drawOpa_(DrawInfo& draw_info, const RenderObjRenderMgr* p_render_mgr) const;
+    void drawXlu_(DrawInfo& draw_info, const RenderObjRenderMgr* p_render_mgr) const;
 
-    void drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_info, const RenderMgr* p_render_mgr) const;
+    void drawShape_(DrawInfo& draw_info, const ShapeRenderInfo& render_info, const RenderObjRenderMgr* p_render_mgr) const;
 
 private:
     agl::g3d::ModelEx                   mModelEx;

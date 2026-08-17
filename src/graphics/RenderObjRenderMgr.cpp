@@ -1,17 +1,17 @@
-#include <graphics/RenderMgr.h>
+#include <graphics/RenderObjRenderMgr.h>
 #include <graphics/RenderObj.h>
 #include <graphics/RenderObjLayer.h>
 
 #include <algorithm>
 
-RenderMgr::RenderMgr()
+RenderObjRenderMgr::RenderObjRenderMgr()
     : mpCallback(nullptr)
     , mShadowMap(nullptr)
     , mReflectionMap(nullptr)
 {
 }
 
-void RenderMgr::clear()
+void RenderObjRenderMgr::clear()
 {
     mRenderObj.clear();
     mRenderObjOpa.clear();
@@ -19,7 +19,7 @@ void RenderMgr::clear()
   //mRenderObjShadow.clear();
 }
 
-void RenderMgr::calc()
+void RenderObjRenderMgr::calc()
 {
     // RenderObj calc is done using multi-threading in vanilla NSMBU
 
@@ -27,12 +27,12 @@ void RenderMgr::calc()
         obj->calc();
 }
 
-void RenderMgr::calcView(s32 view_index, const rio::Camera& camera, const rio::Projection& projection, const CullViewFrustum* p_cull)
+void RenderObjRenderMgr::calcView(s32 view_index, const rio::Camera& camera, const rio::Projection& projection, const CullViewFrustum* p_cull)
 {
     ViewInfo& view_info = getViewInfo(view_index);
     camera.getMatrix(&view_info.view_mtx);
     view_info.proj_mtx = static_cast<const rio::Matrix44f&>(projection.getMatrix());
-  //view_info._74 = param_4;
+  //view_info.p_depth_shadow_mtx = p_depth_shadow_mtx;
     view_info.p_cull = p_cull;
   //view_info._7c = param_6;
 
@@ -45,17 +45,19 @@ void RenderMgr::calcView(s32 view_index, const rio::Camera& camera, const rio::P
     });
 }
 
-void RenderMgr::calcGPU(s32 view_index)
+void RenderObjRenderMgr::calcGPU(s32 view_index)
 {
     ViewInfo& view_info = getViewInfo(view_index);
 
     mModelEnvView.setUniformData(view_index, view_info.view_mtx, view_info.proj_mtx);
 
+  //view_info.p_depth_shadow_mtx = nullptr;
+
     for (RenderObj* obj : mRenderObj)
         obj->calcGPU(view_index, view_info.view_mtx, view_info.proj_mtx, this);
 }
 
-void RenderMgr::drawOpa(s32 view_index, const rio::lyr::DrawInfo& draw_info)
+void RenderObjRenderMgr::drawOpa(s32 view_index, const rio::lyr::DrawInfo& draw_info)
 {
     const ViewInfo& view_info = getViewInfo(view_index);
 
@@ -69,7 +71,7 @@ void RenderMgr::drawOpa(s32 view_index, const rio::lyr::DrawInfo& draw_info)
         mpCallback->postDrawOpa(view_index, draw_info);
 }
 
-void RenderMgr::drawXlu(s32 view_index, const rio::lyr::DrawInfo& draw_info)
+void RenderObjRenderMgr::drawXlu(s32 view_index, const rio::lyr::DrawInfo& draw_info)
 {
     const ViewInfo& view_info = getViewInfo(view_index);
 
@@ -83,7 +85,7 @@ void RenderMgr::drawXlu(s32 view_index, const rio::lyr::DrawInfo& draw_info)
         mpCallback->postDrawXlu(view_index, draw_info);
 }
 
-void RenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu)
+void RenderObjRenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu)
 {
     mRenderObj.push_back(obj);
 
@@ -97,13 +99,13 @@ void RenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu)
   //    mRenderObjShadow.push_back(obj);
 }
 
-void RenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu, const rio::Vector3f& order_pos)
+void RenderObjRenderMgr::pushBackRenderObj(RenderObj* obj, bool draw_opa, bool draw_xlu, const rio::Vector3f& order_pos)
 {
     obj->getOrderPos() = order_pos;
     pushBackRenderObj(obj, draw_opa, draw_xlu);
 }
 
-void RenderMgr::createView(RenderObjLayer* p_layer)
+void RenderObjRenderMgr::createView(RenderObjLayer* p_layer)
 {
     RIO_ASSERT(u32(mModelEnvView.getViewNum()) == getViewNum());
     s32 view_index = getViewNum();
@@ -114,7 +116,7 @@ void RenderMgr::createView(RenderObjLayer* p_layer)
     p_layer->mViewIndex = view_index;
 }
 
-void RenderMgr::clearView()
+void RenderObjRenderMgr::clearView()
 {
     mModelEnvView.clearView();
     mViewInfo.clear();

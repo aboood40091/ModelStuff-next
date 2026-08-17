@@ -1,4 +1,4 @@
-#include <graphics/RenderMgr.h>
+#include <graphics/RenderObjRenderMgr.h>
 #include <graphics/RenderObjLayer.h>
 
 #include <array>
@@ -30,7 +30,7 @@ void RenderObjLayer::initialize()
     addDrawMethodToAll(rio::lyr::DrawMethod(this, &RenderObjLayer::render_));
 }
 
-void RenderObjLayer::setRenderMgr(RenderMgr* p_render_mgr)
+void RenderObjLayer::setRenderMgr(RenderObjRenderMgr* p_render_mgr)
 {
     if (p_render_mgr == nullptr)
     {

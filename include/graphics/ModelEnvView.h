@@ -27,9 +27,9 @@ public:
         cMemberIndex_FogColor,
         cMemberIndex_FogStart,
         cMemberIndex_FogStartEndInv,
-        cMemberIndex_Unk_8,
-        cMemberIndex_Unk_9,
-        cMemberIndex_Unk_10,
+        cMemberIndex_ShadowMtx,
+        cMemberIndex_FogDir,
+        cMemberIndex_TexProjMtx,
         cMemberNum
     };
     static_assert(cMemberNum == 11);

@@ -1,6 +1,6 @@
-#include <graphics/BasicModel.h>
+#include <graphics/AnimModel.h>
 #include <graphics/Renderer.h>
-#include <graphics/RenderMgr.h>
+#include <graphics/RenderObjRenderMgr.h>
 #include <graphics/RenderObjLayer.h>
 
 Renderer* Renderer::sInstance = nullptr;
@@ -48,7 +48,7 @@ void Renderer::drawModel(Model* p_model, bool draw_opa, bool draw_xlu)
     mpLayer->getRenderMgr()->pushBackRenderObj(p_model, draw_opa, draw_xlu);
 }
 
-void Renderer::drawModel(const BasicModel& model, bool draw_opa, bool draw_xlu)
+void Renderer::drawModel(const AnimModel& model, bool draw_opa, bool draw_xlu)
 {
     drawModel(model.getModel(), draw_opa, draw_xlu);
 }

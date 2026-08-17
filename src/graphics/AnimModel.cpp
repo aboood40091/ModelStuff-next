@@ -1,27 +1,44 @@
-#include <graphics/BasicModel.h>
+#include <graphics/AnimModel.h>
 
-BasicModel::BasicModel(ModelG3d* p_model, u32 skl_anim_num, u32 tex_anim_num, u32 shu_anim_num, u32 vis_anim_num, u32 sha_anim_num)
+AnimModel::AnimModel(ModelG3d* p_model, u32 skl_anim_num, u32 tex_anim_num, u32 shu_anim_num, u32 vis_anim_num, u32 sha_anim_num)
     : mpModel(p_model)
     , mpModelResource(nullptr)
 {
     if (skl_anim_num > 0)
+    {
+        RIO_ASSERT(skl_anim_num <= p_model->getSklAnimBufferSize());
         mpSklAnim.setBuffer(skl_anim_num, p_model->getSklAnimBuffer());
+    }
 
     if (tex_anim_num > 0)
+    {
+        RIO_ASSERT(tex_anim_num <= p_model->getTexAnimBufferSize());
         mpTexAnim.setBuffer(tex_anim_num, p_model->getTexAnimBuffer());
+    }
 
     if (shu_anim_num > 0)
+    {
+        RIO_ASSERT(shu_anim_num <= p_model->getShuAnimBufferSize());
         mpShuAnim.setBuffer(shu_anim_num, p_model->getShuAnimBuffer());
+    }
 
     if (vis_anim_num > 0)
+    {
+        RIO_ASSERT(vis_anim_num <= p_model->getVisAnimBufferSize());
         mpVisAnim.setBuffer(vis_anim_num, p_model->getVisAnimBuffer());
+    }
 
     if (sha_anim_num > 0)
+    {
+        RIO_ASSERT(sha_anim_num <= p_model->getShaAnimBufferSize());
         mpShaAnim.setBuffer(sha_anim_num, p_model->getShaAnimBuffer());
+    }
 }
 
-BasicModel::~BasicModel()
+AnimModel::~AnimModel()
 {
+    // We don't actually own the buffers themselves, so don't free them!!!
+
     if (mpSklAnim.isBufferReady())
     {
         for (Buffer<SkeletalAnimation*>::iterator itr_anim = mpSklAnim.begin(), itr_anim_end = mpSklAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
@@ -88,7 +105,7 @@ BasicModel::~BasicModel()
     }
 }
 
-void BasicModel::init(ModelResource* p_mdl_res, const PtrArray<ModelResource>* p_anim_mdl_res_array)
+void AnimModel::init(ModelResource* p_mdl_res, const PtrArray<ModelResource>* p_anim_mdl_res_array)
 {
     mpModelResource = p_mdl_res;
 
@@ -149,13 +166,13 @@ void BasicModel::init(ModelResource* p_mdl_res, const PtrArray<ModelResource>* p
     }
 }
 
-void BasicModel::updateAnimations()
+void AnimModel::playAnmFrameCtrl()
 {
     if (mpSklAnim.isBufferReady())
     {
         for (Buffer<SkeletalAnimation*>::iterator itr_anim = mpSklAnim.begin(), itr_anim_end = mpSklAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
         {
-            (*itr_anim)->update();
+            (*itr_anim)->playFrameCtrl();
         }
     }
 
@@ -163,7 +180,7 @@ void BasicModel::updateAnimations()
     {
         for (Buffer<TexturePatternAnimation*>::iterator itr_anim = mpTexAnim.begin(), itr_anim_end = mpTexAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
         {
-            (*itr_anim)->update();
+            (*itr_anim)->playFrameCtrl();
         }
     }
 
@@ -171,7 +188,7 @@ void BasicModel::updateAnimations()
     {
         for (Buffer<ShaderParamAnimation*>::iterator itr_anim = mpShuAnim.begin(), itr_anim_end = mpShuAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
         {
-            (*itr_anim)->update();
+            (*itr_anim)->playFrameCtrl();
         }
     }
 
@@ -179,7 +196,7 @@ void BasicModel::updateAnimations()
     {
         for (Buffer<VisibilityAnimation*>::iterator itr_anim = mpVisAnim.begin(), itr_anim_end = mpVisAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
         {
-            (*itr_anim)->update();
+            (*itr_anim)->playFrameCtrl();
         }
     }
 
@@ -187,13 +204,13 @@ void BasicModel::updateAnimations()
     {
         for (Buffer<ShapeAnimation*>::iterator itr_anim = mpShaAnim.begin(), itr_anim_end = mpShaAnim.end(); itr_anim != itr_anim_end; ++itr_anim)
         {
-            (*itr_anim)->update();
+            (*itr_anim)->playFrameCtrl();
         }
     }
 }
 
-void BasicModel::updateModel()
+void AnimModel::calcMdl()
 {
-    mpModel->updateAnimations();
-    mpModel->updateModel();
+    mpModel->calcAnm();
+    mpModel->calcMdl();
 }

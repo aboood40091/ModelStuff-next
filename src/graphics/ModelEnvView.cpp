@@ -11,9 +11,9 @@ const ModelEnvView::Member ModelEnvView::cMember[] = {
     { agl::UniformBlock::cType_vec3,    cFogMax },      // vec3     cFogColor[ FOG_MAX ];
     { agl::UniformBlock::cType_float,   cFogMax },      // float    cFogStart[ FOG_MAX ];
     { agl::UniformBlock::cType_float,   cFogMax },      // float    cFogStartEndInv[ FOG_MAX ];
-    { agl::UniformBlock::cType_vec4,    4 },            // vec4     ??? [ 4 ];
-    { agl::UniformBlock::cType_vec3,    cFogMax },      // vec3     ??? [ FOG_MAX ];
-    { agl::UniformBlock::cType_vec4,    4 },            // vec4     ??? [ 4 ];
+    { agl::UniformBlock::cType_vec4,    4 },            // vec4     cShadowMtx[ 4 ];
+    { agl::UniformBlock::cType_vec3,    cFogMax },      // vec3     cFogDir[ FOG_MAX ];
+    { agl::UniformBlock::cType_vec4,    4 },            // vec4     cTexProjMtx[ 4 ];
 };
 
 void ModelEnvView::addView()
@@ -66,7 +66,7 @@ void ModelEnvView::setUniformData(s32 view_index, const rio::Matrix34f& view_mtx
     // TODO
 
     uniform_block.setVector4f(
-        cMemberIndex_Unk_8,
+        cMemberIndex_ShadowMtx,
         &static_cast<const rio::Vector4f&>(rio::Matrix44f::ident.v[0]),
         4
     );
@@ -89,6 +89,8 @@ void ModelEnvView::setUniformData(s32 view_index, const rio::Matrix34f& view_mtx
         );
     }
 
+    static const rio::Vector3f n_ez{ 0.0f, 0.0f, -1.0f };
+
     for (s32 i = 0; i < cFogMax; i++)
     {
         uniform_block.setFloat(
@@ -103,10 +105,8 @@ void ModelEnvView::setUniformData(s32 view_index, const rio::Matrix34f& view_mtx
             i
         );
 
-        const rio::Vector3f n_ez{ 0.0f, 0.0f, -1.0f };
-
         uniform_block.setVector3f(
-            cMemberIndex_Unk_9,
+            cMemberIndex_FogDir,
             n_ez,
             i
         );

@@ -14,7 +14,7 @@ public:
 };
 // static_assert(sizeof(RenderObjBase) == 4);
 
-class RenderMgr;
+class RenderObjRenderMgr;
 
 class RenderObj : public RenderObjBase
 {
@@ -24,13 +24,13 @@ public:
     {
     }
 
-    virtual void calcGPU(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) = 0;
-    virtual void updateView(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) = 0;
-    virtual void drawOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) = 0;
-    virtual void drawXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) = 0;
-    virtual void drawShadowOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) { }
-    virtual void drawReflectionOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) { }
-    virtual void drawReflectionXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderMgr* p_render_mgr) { }
+    virtual void calcGPU(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) = 0;
+    virtual void updateView(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) = 0;
+    virtual void drawOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) = 0;
+    virtual void drawXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) = 0;
+    virtual void drawShadowOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) { }
+    virtual void drawReflectionOpa(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) { }
+    virtual void drawReflectionXlu(s32 view_index, const rio::Matrix34f& view_mtx, const rio::Matrix44f& proj_mtx, RenderObjRenderMgr* p_render_mgr) { }
     virtual bool hasShadow() const { return false; }
 
     rio::Vector3f& getOrderPos() { return mOrderPos; }

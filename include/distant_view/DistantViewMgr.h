@@ -13,7 +13,7 @@
 #include <postfx/aglDepthOfField.h>
 #include <resource/SharcArchiveRes.h>
 
-class BasicModel;
+class AnimModel;
 
 class DVCameraParam;
 
@@ -142,7 +142,7 @@ private:
     rio::LookAtCamera           mCamera;
     rio::PerspectiveProjection  mProjection;
     CullViewFrustum             mCull;
-    BasicModel*                 mpBasicModel;
+    AnimModel*                  mpAnimModel;
     DVCameraParam*              mpCameraParam;
     rio::Vector3f               mBgPos; // Position relative to the Bg / level camera
     agl::pfx::DepthOfField      mDof;

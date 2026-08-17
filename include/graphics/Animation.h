@@ -15,7 +15,7 @@ public:
 
     virtual void calc() = 0;
 
-    void update();
+    void playFrameCtrl();
 
     FrameCtrl& getFrameCtrl() { return mFrameCtrl; }
     const FrameCtrl& getFrameCtrl() const { return mFrameCtrl; }

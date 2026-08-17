@@ -2,7 +2,7 @@
 
 #include <misc/rio_Types.h>
 
-class BasicModel;
+class AnimModel;
 class Model;
 class RenderObjLayer;
 
@@ -35,7 +35,7 @@ public:
     }
 
     void drawModel(Model* p_model, bool draw_opa = true, bool draw_xlu = true);
-    void drawModel(const BasicModel& model, bool draw_opa = true, bool draw_xlu = true);
+    void drawModel(const AnimModel& model, bool draw_opa = true, bool draw_xlu = true);
 
     // TODO
   //void drawActorBgUnit(UnitID unit, const sead::Vector3f& pos, u32 angle, const sead::Vector3f& scale);

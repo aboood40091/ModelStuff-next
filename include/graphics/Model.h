@@ -8,9 +8,6 @@
 
 #include <string>
 
-class ModelG3d;
-class ModelResource;
-
 class Model : public RenderObj
 {
 public:
@@ -21,10 +18,6 @@ public:
         cBoundingMode_EnableSubBounding
     };
 
-    // Why are these here... ?
-    static ModelG3d* createG3d(const ModelResource& res, const char* name, s32 num_skl_anim, s32 num_tex_anim, s32 num_shu_anim, s32 num_vis_anim, s32 num_sha_anim, BoundingMode bounding_mode);
-    static ModelG3d* createG3d(const ModelResource& res, const char* name, s32 num_view, s32 num_skl_anim, s32 num_tex_anim, s32 num_shu_anim, s32 num_vis_anim, s32 num_sha_anim, BoundingMode bounding_mode);
-
 public:
     Model();
     virtual ~Model();
@@ -34,8 +27,8 @@ public:
     Model& operator=(const Model&) = delete;
     Model& operator=(Model&&) = delete;
 
-    virtual void updateAnimations() = 0;
-    virtual void updateModel() = 0;
+    virtual void calcAnm() = 0;
+    virtual void calcMdl() = 0;
     virtual void setMtxRT(const rio::Matrix34f& rt) = 0;
     virtual const rio::Matrix34f& getMtxRT() const = 0;
     virtual void setScale(const rio::Vector3f& scale) = 0;
@@ -75,3 +68,13 @@ public:
     virtual Animation* const* getShaAnims() const = 0;
 };
 //static_assert(sizeof(Model) == 0x28);
+
+class ModelG3d;
+class ModelResource;
+
+class ModelUtil
+{
+public:
+    static ModelG3d* createG3d(const ModelResource& res, const char* name, s32 num_skl_anim, s32 num_tex_anim, s32 num_shu_anim, s32 num_vis_anim, s32 num_sha_anim, Model::BoundingMode bounding_mode);
+    static ModelG3d* createG3d(const ModelResource& res, const char* name, s32 num_view, s32 num_skl_anim, s32 num_tex_anim, s32 num_shu_anim, s32 num_vis_anim, s32 num_sha_anim, Model::BoundingMode bounding_mode);
+};

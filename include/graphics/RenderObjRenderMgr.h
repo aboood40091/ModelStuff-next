@@ -1,3 +1,4 @@
+
 #pragma once
 
 #include <graphics/ModelEnvView.h>
@@ -17,7 +18,7 @@ class CullViewFrustum;
 class RenderObj;
 class RenderObjLayer;
 
-class RenderMgr
+class RenderObjRenderMgr
 {
 public:
     struct ViewInfo
@@ -25,7 +26,7 @@ public:
         RenderObjLayer*         p_layer;
         rio::Matrix34f          view_mtx;
         rio::Matrix44f          proj_mtx;
-      //const rio::Matrix44f*   _74;
+      //const rio::Matrix44f*   p_depth_shadow_mtx;
         const CullViewFrustum*  p_cull = nullptr;
       //void*                   _7c; // pointer to struct of two f32 and one rio::Color4f for fog color
     };
@@ -41,8 +42,7 @@ public:
     };
 
 public:
-    RenderMgr();
-    ~RenderMgr() { }
+    RenderObjRenderMgr();
 
     void clear();
 
@@ -105,4 +105,4 @@ private:
     std::vector<ViewInfo>   mViewInfo;
   //rio::LinkListNode       mListNode;          // For OffsetList in LayerMgr
 };
-//static_assert(sizeof(RenderMgr) == 0x4D4);
+//static_assert(sizeof(RenderObjRenderMgr) == 0x4D4);
